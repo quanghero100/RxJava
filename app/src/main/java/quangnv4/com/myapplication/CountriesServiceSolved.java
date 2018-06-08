@@ -81,10 +81,11 @@ class CountriesServiceSolved implements CountriesService {
 
     @Override
     public Observable<Country> listPopulationMoreThanOneMillionWithTimeoutFallbackToEmpty(final FutureTask<List<Country>> countriesFromNetwork) {
-        return Observable.fromFuture(countriesFromNetwork)
+        return Observable.fromFuture(countriesFromNetwork, 1, TimeUnit.SECONDS)
                 .timeout(1, TimeUnit.SECONDS)
                 .flatMap(element -> Observable.fromIterable(element))
-                .filter(country -> country.getPopulation() > 1000000);
+                .filter(country -> country.getPopulation() > 1000000)
+                .onErrorResumeNext(Observable.empty());
 
     }
 
